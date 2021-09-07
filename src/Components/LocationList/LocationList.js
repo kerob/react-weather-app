@@ -64,25 +64,11 @@ class LocationList extends Component {
           {this.props.locations.slice(0, 10).map((location, index) => {
             //slice limits to first 10 results, becomes overloaded otherwise
             return (
-              <LocationItem location={location} key={location.id} />
-              // <LocationItem
-              //   key={location.id}
-              //   value={
-              //     location.state != ""
-              //       ? location.name + ", " + location.state + " " + location.id
-              //       : location.name +
-              //         ", " +
-              //         location.country +
-              //         " " +
-              //         location.id
-              //   }
-              //   onClick={this.onClickHandler}
-              // >
-              //   <IconWrapper>location_on</IconWrapper>
-              //   {location.state
-              //     ? location.name + ", " + location.state
-              //     : location.name + ", " + location.country}
-              // </LocationItem>
+              <LocationItem
+                sendLocationData={this.props.updateCurrentLocation}
+                location={location}
+                key={location.id}
+              />
             );
           })}
         </LocationListWrapper>

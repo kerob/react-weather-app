@@ -94,35 +94,37 @@ class SearchPanel extends Component {
       visibleToggle: true,
       //locationHistory: ["London", "San Francisco, CA"],
       locationHistory: [
-        {
-          id: 21010,
-          name: "Location Test 1",
-          state: "",
-          country: "IR",
-          coord: {
-            lon: 48.279442,
-            lat: 3.42944,
-          },
-        },
-        {
-          id: 30002,
-          name: "US Location 2",
-          state: "CA",
-          country: "IR",
-          coord: {
-            lon: 8.279442,
-            lat: 33.42944,
-          },
-        },
+        // {
+        //   id: 21010,
+        //   name: "Location Test 1",
+        //   state: "",
+        //   country: "IR",
+        //   coord: {
+        //     lon: 48.279442,
+        //     lat: 3.42944,
+        //   },
+        // },
+        // {
+        //   id: 30002,
+        //   name: "US Location 2",
+        //   state: "CA",
+        //   country: "IR",
+        //   coord: {
+        //     lon: 8.279442,
+        //     lat: 33.42944,
+        //   },
+        // },
       ],
       locationSuggestions: [],
     };
 
     this.onChangeHandler = this.onChangeHandler.bind(this);
+    this.grabLocationItem = this.grabLocationItem.bind(this);
     //this.buildLocationList = this.buildLocationList.bind(this);
   }
 
-  onChangeHandler(text) {
+  onChangeHandler(event) {
+    let text = event.target.value;
     let matches = [];
     let filteredMatches = [];
     const reducerMatches = (accumulatedArray, currentValue) => {
@@ -159,12 +161,38 @@ class SearchPanel extends Component {
     //console.log(matches);
     console.log(filteredMatches);
     this.setState({ locationSuggestions: filteredMatches });
-    this.setState({ searchText: text });
+    this.setState({ searchText: event.target.value });
   }
 
-  // grabLocationItem(){
+  grabLocationItem(locationData) {
+    // console.log("We got communication");
+    // console.log(locationData.id);
+    let newId = locationData.id;
+    let isCityInHistory = [];
+    let tempHistory = this.state.locationHistory;
 
-  // };
+    isCityInHistory = tempHistory.filter((city) => {
+      return city.id === newId;
+    });
+
+    console.log(isCityInHistory);
+    console.log(tempHistory);
+
+    let newHistory = [locationData, ...this.state.locationHistory];
+
+    this.props.setCurrentLocation(locationData);
+
+    if (isCityInHistory.length > 0) {
+      this.setState({
+        searchText: "",
+      });
+    } else {
+      this.setState({
+        locationHistory: newHistory,
+        searchText: "",
+      });
+    }
+  }
 
   // buildLocationList(itemList) {
   //   console.log("test");
@@ -181,6 +209,27 @@ class SearchPanel extends Component {
 
   //   //return <LocationList>{outputList}</LocationList>;
   // }
+  componentDidUpdate(prevProps, prevState) {
+    //Component updates the currently saved History
+    let prevStateString = JSON.stringify(prevState.locationHistory);
+    let updatedStateString = JSON.stringify(this.state.locationHistory);
+
+    if (prevStateString !== updatedStateString) {
+      console.log("Updating History:", updatedStateString);
+      localStorage.setItem("locationHistory", updatedStateString);
+    }
+  }
+
+  componentDidMount() {
+    //Component loads with previously saved History
+    let savedHistoryFromLocalStorage = localStorage.getItem("locationHistory");
+
+    if (savedHistoryFromLocalStorage) {
+      this.setState({
+        locationHistory: JSON.parse(savedHistoryFromLocalStorage),
+      });
+    }
+  }
 
   render() {
     if (!this.state.visibleToggle) {
@@ -190,18 +239,25 @@ class SearchPanel extends Component {
       <SearchWrapper>
         <Input
           startIcon="search"
-          onChangeHandler={this.onChangeHandler}
+          onChange={this.onChangeHandler}
+          value={this.state.searchText}
         ></Input>{" "}
         {/* <Button>Search</Button> */}
-        {/* {this.state.locationSuggestions ? (
-          <LocationList locations={this.state.locationSuggestions} />
+        {this.state.searchText !== "" ? (
+          <LocationList
+            updateCurrentLocation={this.grabLocationItem}
+            locations={this.state.locationSuggestions}
+          />
         ) : (
-          <LocationList locations={this.state.locationHistory} />
-        )} */}
-        {/* <LocationList locations={this.state.locationHistory} /> */}
-        {this.state.locationSuggestions && (
-          <LocationList locations={this.state.locationSuggestions} />
+          <LocationList
+            updateCurrentLocation={this.props.setCurrentLocation}
+            locations={this.state.locationHistory}
+          />
         )}
+        {/* <LocationList locations={this.state.locationHistory} /> */}
+        {/* {this.state.locationSuggestions && (
+          <LocationList locations={this.state.locationSuggestions} />
+        )} */}
         {/* <LocationList> */}
         {/* {this.buildLocationList(this.state.locationHistory)} */}
         {/* {this.state.locationHistory.map((location, index) => {

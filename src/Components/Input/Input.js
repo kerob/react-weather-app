@@ -141,29 +141,34 @@ class Input extends Component {
 
     this.state = {
       type: "text",
-      inputText: "",
+      // inputText: "",
       error: false,
     };
 
-    this.handleOnChange = this.handleOnChange.bind(this);
-    this.handleError = this.handleError.bind(this);
+    // this.handleOnChange = this.handleOnChange.bind(this);
+    // this.handleError = this.handleError.bind(this);
+    // this.resetInputField = this.resetInputField.bind(this);
   }
 
-  handleOnChange(e) {
-    //custom handler to interact with SearchPanel component
-    this.props.onChangeHandler(e.target.value);
-    this.setState({
-      inputText: e.target.value,
-    });
-  }
+  // handleOnChange(e) {
+  //   //custom handler to interact with SearchPanel component
+  //   this.props.onChangeHandler(e.target.value);
+  //   // this.setState({
+  //   //   inputText: e.target.value,
+  //   // });
+  // }
 
-  handleError() {
-    if (this.state.inputText.length >= 15) {
-      return true;
-    } else {
-      return this.props.error;
-    }
-  }
+  // resetInputField() {
+  //   this.setState({ inputText: "" });
+  // }
+
+  // handleError() {
+  //   if (this.state.inputText.length >= 15) {
+  //     return true;
+  //   } else {
+  //     return this.props.error;
+  //   }
+  // }
 
   render() {
     return (
@@ -186,23 +191,27 @@ class Input extends Component {
             <TextField
               rows={this.props.rows}
               type={this.state.type}
-              value={this.props.value ? this.props.value : this.state.inputText}
+              // value={this.props.value ? this.props.value : this.state.inputText}
+              value={this.props.value}
               placeholder={this.props.placeholder}
               fullWidth={this.props.fullWidth}
-              onChange={
-                this.props.onChange ? this.props.onChange : this.handleOnChange
-              }
+              // onChange={
+              //   this.props.onChange ? this.props.onChange : this.handleOnChange
+              // }
+              onChange={this.props.onChange}
               disabled={this.props.disabled}
             />
           ) : (
             <InputField
               type={this.state.type}
-              value={this.props.value ? this.props.value : this.state.inputText}
+              // value={this.props.value ? this.props.value : this.state.inputText}
+              value={this.props.value}
               placeholder={this.props.placeholder}
               fullWidth={this.props.fullWidth}
-              onChange={
-                this.props.onChange ? this.props.onChange : this.handleOnChange
-              }
+              // onChange={
+              //   this.props.onChange ? this.props.onChange : this.handleOnChange
+              // }
+              onChange={this.props.onChange}
               disabled={this.props.disabled}
             />
           )}

@@ -104,33 +104,45 @@ class Card extends Component {
 
   grabWeatherData() {
     //check for Weather API, maybe add location check?
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        //OpenWeatherMap One Call API
-        fetch(
-          `https://api.openweathermap.org/data/2.5/onecall?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${process.env.REACT_APP_OPENWEATHERMAP_API_KEY}&units=${this.state.unit}`
-        )
-          .then((response) => response.json())
-          .then((json) => {
-            this.setState({
-              data: json.results,
-              weeklyForecast: json.daily,
-              date: convertDate(json.current.dt),
-              location: json.timezone,
-              temp: json.current.temp,
-              temp_min: json.daily[0].temp.min,
-              temp_max: json.daily[0].temp.max,
-              status: json.current.weather[0].main,
-              humidity: json.current.humidity,
-              wind_speed: json.current.wind_speed,
-              wind_direction: json.current.wind_deg,
-              visibility: json.current.visibility,
-              air_pressure: json.current.pressure,
-              icon: `http://openweathermap.org/img/wn/${json.current.weather[0].icon}.png`,
-            });
-          });
-      });
+    // if (navigator.geolocation) {
+    //   navigator.geolocation.getCurrentPosition((position) => {
+
+    let latitude = 0;
+    let longitude = 0;
+
+    if (this.props.requestType === "LOCAL_DATA") {
+      latitude = this.props.latitude;
+      longitude = this.props.longitude;
+    } else if (this.props.requestType === "FETCH_DATA") {
+      latitude = this.props.currentLocation.coord.lat;
+      longitude = this.props.currentLocation.coord.lon;
     }
+
+    //OpenWeatherMap One Call API
+    fetch(
+      `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${process.env.REACT_APP_OPENWEATHERMAP_API_KEY}&units=${this.state.unit}`
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        this.setState({
+          data: json.results,
+          weeklyForecast: json.daily,
+          date: convertDate(json.current.dt),
+          location: json.timezone,
+          temp: json.current.temp,
+          temp_min: json.daily[0].temp.min,
+          temp_max: json.daily[0].temp.max,
+          status: json.current.weather[0].main,
+          humidity: json.current.humidity,
+          wind_speed: json.current.wind_speed,
+          wind_direction: json.current.wind_deg,
+          visibility: json.current.visibility,
+          air_pressure: json.current.pressure,
+          icon: `http://openweathermap.org/img/wn/${json.current.weather[0].icon}.png`,
+        });
+      });
+    //   });
+    // }
   }
 
   changeTempUnits() {
@@ -150,6 +162,8 @@ class Card extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.unit !== this.state.unit) {
+      this.grabWeatherData();
+    } else if (prevProps.currentLocation.id !== this.props.currentLocation.id) {
       this.grabWeatherData();
     }
   }

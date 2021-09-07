@@ -39,7 +39,7 @@ class LocationItem extends Component {
     // console.log("test");
     // console.log(event.value);
     let targetLocation = "";
-    if (this.props.location.state != "") {
+    if (this.props.location.state !== "") {
       targetLocation =
         this.props.location.name +
         ", " +
@@ -55,6 +55,9 @@ class LocationItem extends Component {
         this.props.location.id;
     }
     console.log(targetLocation);
+    if (this.props.sendLocationData) {
+      this.props.sendLocationData(this.props.location);
+    }
   }
 
   render() {
